@@ -40,14 +40,19 @@ var emailTemplate = fs.readFileSync("email_template.html","utf8");
 // use tumbler api to get latest posts
 client.posts('elpenao.tumblr.com', { type: 'text' }, function (err, data){
 	var latestPosts = [];
+	var dateDiff = 0;
+	var day = 86400000;
     var posts = data.posts;
     for (var i = 0; i < posts.length; i++) {
     	var postObject = {};
     	postObject.post_url = posts[i].post_url;
     	postObject.title = posts[i].title;
     	postObject.date = posts[i].date;
-    	console.log(postObject.date - Date.now());
-    	latestPosts.push(postObject);
+    	var now = new Date(postObject.date);
+    	dateDiff = Date.now() - now;
+    	if (dateDiff < (day * 30)){
+    	 	latestPosts.push(postObject);
+    	}
     }
     for (var i = 0; i < csv_data.length; i++) {
     	csv_data[i].latestPosts = latestPosts;
